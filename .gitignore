@@ -6,3 +6,4 @@ RansomwareClient/obj/
 RansomwareWebApp/obj/
 PopLockDropIt/bin/
 PopLockDropIt/obj/
+*.csproj
