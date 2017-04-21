@@ -1,0 +1,8 @@
+.vs/
+packages/
+RansomwareWebApp/bin/
+RansomwareClient/bin/
+RansomwareClient/obj/
+RansomwareWebApp/obj/
+PopLockDropIt/bin/
+PopLockDropIt/obj/
